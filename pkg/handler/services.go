@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gorilla/mux"
@@ -34,7 +35,20 @@ func (h *ServicesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ServicesHandler) handleList(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(h.services)
+	services := h.services
+
+	name := r.URL.Query().Get("name")
+	if name != "" {
+		name = strings.ToLower(name)
+		services = make([]discovery.Service, 0)
+		for _, v := range h.services {
+			if strings.ToLower(v.Name) == name {
+				services = append(services, v)
+			}
+		}
+	}
+
+	js, err := json.Marshal(services)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -46,7 +60,20 @@ func (h *ServicesHandler) handleList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ServicesHandler) handleGet(id string, w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(h.services[0])
+	var service *discovery.Service
+
+	for _, v := range h.services {
+		if v.ID == id {
+			service = &v
+		}
+	}
+
+	if service == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	js, err := json.Marshal(service)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
