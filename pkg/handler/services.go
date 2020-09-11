@@ -35,7 +35,7 @@ func (h *ServicesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ServicesHandler) handleList(w http.ResponseWriter, r *http.Request) {
-	services := h.services
+	services := make([]discovery.Service, 0)
 
 	name := r.URL.Query().Get("name")
 	if name != "" {

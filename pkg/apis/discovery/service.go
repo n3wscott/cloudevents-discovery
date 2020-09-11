@@ -11,10 +11,10 @@ type Service struct {
 	SubscriptionConfig map[string]string `json:"subscriptionconfig,omitempty"` // "subscriptionconfig": { ?  "[key]": "[value]", * }
 	AuthScope          string            `json:"authscope,omitempty"`          //	"authscope": "[string]", ?
 	Protocols          []string          `json:"protocols"`                    // "protocols": [ "[string]" + ],
-	Types              []ServiceType     `json:"types,omitempty"`              //"types": [ ?
+	Events             []ServiceEvent    `json:"events,omitempty"`             //"events": [ ?
 }
 
-type ServiceType struct {
+type ServiceEvent struct {
 	Type              string                 `json:"type"`                        // "type": "[ce-type value]",
 	Description       string                 `json:"description,omitempty"`       // "description": "[human string]", ?
 	DataContentType   string                 `json:"datacontenttype,omitempty"`   // "datacontenttype": "[ce-datacontenttype value]", ?

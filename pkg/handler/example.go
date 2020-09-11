@@ -27,3 +27,38 @@ const exampleServices = `[{
       "type": "com.example.widget.delete"
     }]
 }]`
+
+const exampleSubscriptions = `[{
+	"id": "bc656dc8-spvbl",
+	"protocol": "HTTP",
+	"protocolsettings": {
+		"headers": {
+			"custom": "header"
+		},
+		"method": "POST"
+	},
+	"sink": "http://localhost:1337",
+	"filter": {
+		"dialect": "basic",
+		"filters": [{
+				"type": "exact",
+				"property": "type",
+				"value": "com.example.my_event"
+			},
+			{
+				"type": "suffix",
+				"property": "subject",
+				"value": ".jpg"
+			}
+		]
+	}
+},{
+	"id": "abc-123",
+	"protocol": "MQTT3",
+	"protocolsettings": {
+		"topicname": "fancytopic", 
+		"qos": 2,
+		"retain": true
+	},
+	"sink": "http://localhost:1337"
+}]`

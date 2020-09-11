@@ -9,16 +9,16 @@ import (
 )
 
 func main() {
-
 	servicesHandler := new(handler.ServicesHandler)
-	typesHandler := new(handler.TypesHandler)
+	subscriptionHandler := new(handler.SubscriptionHandler)
 
 	r := mux.NewRouter()
 
 	r.Handle("/services", servicesHandler)
 	r.Handle("/services/{id}", servicesHandler)
-	r.Handle("/types", typesHandler)
-	r.Handle("/types/{id}", typesHandler)
+
+	r.Handle("/subscriptions", subscriptionHandler)
+	r.Handle("/subscriptions/{id}", subscriptionHandler)
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":8080", nil))
