@@ -34,6 +34,27 @@ func (h *ServicesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *ServicesHandler) GetServices() []discovery.Service {
+	return h.services
+}
+
+func (h *ServicesHandler) CreateOrUpdateService(s discovery.Service) {
+	for i, old := range h.services {
+		if old.ID == s.ID {
+			h.services[i] = s
+		}
+	}
+	h.services = append(h.services, s)
+}
+
+func (h *ServicesHandler) DeleteService(id string) {
+	for i, old := range h.services {
+		if old.ID == id {
+			h.services = append(h.services[:i], h.services[i+1:]...)
+		}
+	}
+}
+
 func (h *ServicesHandler) handleList(w http.ResponseWriter, r *http.Request) {
 	services := h.services
 
