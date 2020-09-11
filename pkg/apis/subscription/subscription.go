@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	cloudevents "github.com/cloudevents/sdk-go/v2"
+
+	"github.com/cloudevents/sdk-go/v2/types"
 )
 
 // Based on https://github.com/cloudevents/spec/tree/e9f516548f369f15348d4f1603bbc98c342a1d8f/subscriptions-api.md
@@ -28,7 +29,7 @@ type Subscription struct {
 
 	// Sink - The address to which events SHALL be delivered using the selected protocol. The format of the address MUST
 	// be valid for the selected protocol or one of the protocol's own transport bindings (e.g. AMQP over WebSockets).
-	Sink cloudevents.URIRef `json:"sink"`
+	Sink types.URI `json:"sink"`
 
 	/// Filter - A filter is an expression of a particular filter dialect that evaluates to true or false and that
 	// determines whether an instance of a CloudEvent will be delivered to the subscription's sink. If a filter

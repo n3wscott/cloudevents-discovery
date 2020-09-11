@@ -15,6 +15,8 @@ type SubscriptionHandler struct {
 	subscriptions map[string]subscription.Subscription
 }
 
+// TODO: I made a choice to not implement the OpenAPI of the current api for subscription. I wanted id in the url, not query.
+
 func (h *SubscriptionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.once.Do(func() {
 		h.subscriptions = make(map[string]subscription.Subscription, 0)

@@ -35,12 +35,14 @@ func (h *ServicesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ServicesHandler) handleList(w http.ResponseWriter, r *http.Request) {
-	services := make([]discovery.Service, 0)
+	services := h.services
 
+	// Check to see if there is a filter.
 	name := r.URL.Query().Get("name")
 	if name != "" {
 		name = strings.ToLower(name)
 		services = make([]discovery.Service, 0)
+		// Filter.
 		for _, v := range h.services {
 			if strings.ToLower(v.Name) == name {
 				services = append(services, v)

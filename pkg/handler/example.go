@@ -4,6 +4,7 @@ const exampleServices = `[{
   "id": "3db60532-e839-417e-8644-e255f338776a",
   "url": "https://storage.example.com/service/storage",
   "name": "storage",
+  "specversions": [ "0.3", "1.0" ],
   "description": "Blob storage in the cloud",
   "protocols": ["HTTP"],
   "subscriptionurl": "https://cloud.example.com/docs/storage",
