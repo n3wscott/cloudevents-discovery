@@ -1,0 +1,29 @@
+[{
+     "id": "fe055b2f-5640-495c-97b2-b58b7bd30ce3",
+     "url": "https://example.com/service/c",
+     "name": "c service",
+     "specversions": [ "0.3", "1.0" ],
+     "description": "C service - outdated",
+     "protocols": ["HTTP"],
+     "subscriptionurl": "https://example.com/docs/c",
+     "types": [{
+                 "type": "com.example.c",
+                 "specversions": [ "1.0" ],
+                 "datacontenttype": "application/json",
+                 "sourcetemplate": "https://example.com/service/c/{objectID}"
+               }]
+   },{
+  "id": "cd2f1648-e8a2-45fd-946b-6e3331e47901",
+  "url": "https://example.com/service/d",
+  "name": "d service",
+  "specversions": [ "1.0" ],
+  "description": "D service",
+  "protocols": ["HTTP"],
+  "subscriptionurl": "https://example.com/docs/d",
+  "types": [{
+              "type": "com.example.d",
+              "specversions": [ "1.0" ],
+              "datacontenttype": "application/json",
+              "sourcetemplate": "https://example.com/service/d/{objectID}"
+            }]
+}]

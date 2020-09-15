@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
@@ -15,6 +16,37 @@ type ServicesHandler struct {
 	once     sync.Once
 	services []discovery.Service
 }
+
+// -- Management --
+
+func (h *ServicesHandler) LoadServicesFromFile(file string) error {
+	var onceErr error
+	h.once.Do(func() {
+		services, err := ioutil.ReadFile(file)
+		if err != nil {
+			onceErr = err
+			return
+		}
+		h.services = make([]discovery.Service, 0)
+		if err := json.Unmarshal(services, &h.services); err != nil {
+			onceErr = err
+			return
+		}
+	})
+	return onceErr
+}
+
+func (h *ServicesHandler) Set(service discovery.Service) {
+	for i, svc := range h.services {
+		if svc.ID == service.ID {
+			h.services[i] = service
+			return
+		}
+	}
+	h.services = append(h.services, service)
+}
+
+// -- HTTP --
 
 func (h *ServicesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.once.Do(func() {

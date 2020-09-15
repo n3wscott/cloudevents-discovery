@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/n3wscott/cloudevents-discovery/pkg/background"
@@ -13,6 +14,7 @@ import (
 )
 
 type envConfig struct {
+	Port          int    `envconfig:"PORT" default:"8080"`
 	Downstream    string `envconfig:"DISCOVERY_DOWNSTREAM"` // comma separated list of urls.
 	Services      string `envconfig:"DISCOVERY_SERVICES_FILE"`
 	Subscriptions string `envconfig:"SUBSCRIPTIONS_FILE"`
@@ -26,6 +28,12 @@ func main() {
 	}
 
 	servicesHandler := new(handler.ServicesHandler)
+	if env.Services != "" {
+		if err := servicesHandler.LoadServicesFromFile(env.Services); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	subscriptionHandler := new(handler.SubscriptionHandler)
 
 	r := mux.NewRouter()
@@ -40,12 +48,17 @@ func main() {
 
 	ctx := context.Background()
 
-	agg := background.NewDiscoveryAggregation(env.Downstream)
+	agg := background.NewDiscoveryAggregation(env.Downstream, servicesHandler)
 	go func() {
 		if err := agg.Start(ctx); err != nil {
 			log.Println(err)
 		}
 	}()
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	addr := fmt.Sprintf(":%d", env.Port)
+
+	log.Printf("will listen on %s\n", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatal(err)
+	}
 }
