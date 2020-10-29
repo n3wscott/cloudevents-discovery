@@ -1,0 +1,46 @@
+[{
+   "id": "b36e4c80-8a9a-45b3-acd1-69df0612e90d",
+   "url": "https://example.com/service/x",
+   "name": "x service",
+   "epoch": 6,
+   "specversions": [ "1.0" ],
+   "description": "X service",
+   "protocols": ["HTTP"],
+   "subscriptionurl": "https://example.com/docs/x",
+   "types": [{
+               "type": "com.example.x",
+               "specversions": [ "1.0" ],
+               "datacontenttype": "application/json",
+               "sourcetemplate": "https://example.com/service/x/{objectID}"
+             }]
+ },{
+  "id": "9750174c-f7a4-4ffe-9c82-a19e4ca06421",
+  "url": "https://example.com/service/y",
+  "name": "y service",
+  "epoch": 4,
+  "specversions": [ "1.0" ],
+  "description": "Y service",
+  "protocols": ["HTTP"],
+  "subscriptionurl": "https://example.com/docs/y",
+  "types": [{
+              "type": "com.example.y",
+              "specversions": [ "1.0" ],
+              "datacontenttype": "application/json",
+              "sourcetemplate": "https://example.com/service/y/{objectID}"
+            }]
+},{
+  "id": "29f0bebb-afa4-46a1-a4a9-d65acee9499e",
+  "url": "https://example.com/service/z",
+  "name": "z service",
+  "epoch": 8,
+  "specversions": [ "1.0" ],
+  "description": "Z service",
+  "protocols": ["HTTP"],
+  "subscriptionurl": "https://example.com/docs/z",
+  "types": [{
+              "type": "com.example.z",
+              "specversions": [ "1.0" ],
+              "datacontenttype": "application/json",
+              "sourcetemplate": "https://example.com/service/z/{objectID}"
+            }]
+}]
