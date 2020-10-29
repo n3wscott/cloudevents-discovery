@@ -45,7 +45,7 @@ watch curl localhost:8080/services
 Or fancy:
 
 ```
-watch 'curl localhost:8080/services | jq ".[].description"'
+watch 'curl localhost:8080/services | jq -r ".[].description, .[].epoch"'
 ```
 
 Start `:8181`:

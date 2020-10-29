@@ -4,6 +4,7 @@ type Service struct {
 	ID                 string            `json:"id"`                           // "id": "[a globally unique UUID]",
 	URL                string            `json:"url"`                          // "url": "[unique URL to this service]",
 	Name               string            `json:"name"`                         // "name": "[unique name for this services]",
+	Epoch              int               `json:"epoch"`                        //
 	Description        string            `json:"description,omitempty"`        // "description": "[human string]", ?
 	DocsURL            string            `json:"docsurl,omitempty"`            //"docsurl": "[URL reference for human documentation]", ?
 	SpecVersions       []string          `json:"specversions"`                 // "specversions": [ "[ce-specversion value]" + ],

@@ -55,6 +55,7 @@ func (a *discoveryAggregation) Start(ctx context.Context) error {
 					continue
 				}
 				for i, svc := range svcs {
+
 					fmt.Printf("\t[%d]:\t%+v\n", i, svc)
 					a.mgr.Set(svc)
 				}

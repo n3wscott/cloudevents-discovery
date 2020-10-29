@@ -39,7 +39,9 @@ func (h *ServicesHandler) LoadServicesFromFile(file string) error {
 func (h *ServicesHandler) Set(service discovery.Service) {
 	for i, svc := range h.services {
 		if svc.ID == service.ID {
-			h.services[i] = service
+			if service.Epoch > svc.Epoch {
+				h.services[i] = service
+			}
 			return
 		}
 	}
