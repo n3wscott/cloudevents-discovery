@@ -34,7 +34,7 @@ Adds:      a,b,c     c*,d       x,y,z
 
 Start `:8080`:
 ```
-PORT=8080 DISCOVERY_DOWNSTREAM=http://localhost:8181 DISCOVERY_SERVICES_FILE=config/discovery/xyz.yaml go run ./cmd/server/
+PORT=8080 DISCOVERY_DOWNSTREAM=http://localhost:8181 DISCOVERY_SERVICES_FILE=testdata/discovery/xyz.yaml go run ./cmd/server/
 ```
 
 Start a watch on the lead
@@ -51,7 +51,7 @@ watch 'curl localhost:8080/services | jq -r ".[].description, .[].epoch"'
 Start `:8181`:
 
 ```
-PORT=8181 DISCOVERY_DOWNSTREAM=http://localhost:8282 DISCOVERY_SERVICES_FILE=config/discovery/cd.yaml go run ./cmd/server/
+PORT=8181 DISCOVERY_DOWNSTREAM=http://localhost:8282 DISCOVERY_SERVICES_FILE=testdata/discovery/cd.yaml go run ./cmd/server/
 ```
 
 Start `:8282`:
@@ -63,5 +63,5 @@ PORT=8282 DISCOVERY_SERVICES_FILE=config/discovery/abc.yaml go run ./cmd/server/
 or to make a ring:
 
 ```
-PORT=8282 DISCOVERY_DOWNSTREAM=http://localhost:8080 DISCOVERY_SERVICES_FILE=config/discovery/abc.yaml go run ./cmd/server/
+PORT=8282 DISCOVERY_DOWNSTREAM=http://localhost:8080 DISCOVERY_SERVICES_FILE=testdata/discovery/abc.yaml go run ./cmd/server/
 ```

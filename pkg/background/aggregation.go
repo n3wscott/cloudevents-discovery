@@ -43,7 +43,7 @@ func (a *discoveryAggregation) Start(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			fmt.Println("Discovery Aggregation - done")
-			return nil
+			return ctx.Err()
 		case <-timer:
 			fmt.Printf("Discovery.Services[%d]\n", len(a.downstream))
 

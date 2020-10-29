@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/n3wscott/cloudevents-discovery/pkg/background"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -15,6 +16,14 @@ import (
 type ServicesHandler struct {
 	once     sync.Once
 	services []discovery.Service
+
+	changes chan<- background.ServiceChange
+}
+
+func NewServiceHandler(changes chan<- background.ServiceChange) *ServicesHandler {
+	return &ServicesHandler{
+		changes: changes,
+	}
 }
 
 // -- Management --
@@ -41,11 +50,25 @@ func (h *ServicesHandler) Set(service discovery.Service) {
 		if svc.ID == service.ID {
 			if service.Epoch > svc.Epoch {
 				h.services[i] = service
+				// And vent.
+				if h.changes != nil {
+					h.changes <- background.ServiceChange{
+						Change:  "update",
+						Service: service,
+					}
+				}
 			}
 			return
 		}
 	}
 	h.services = append(h.services, service)
+	// And vent.
+	if h.changes != nil {
+		h.changes <- background.ServiceChange{
+			Change:  "add",
+			Service: service,
+		}
+	}
 }
 
 // -- HTTP --
@@ -84,6 +107,14 @@ func (h *ServicesHandler) CreateOrUpdateService(s discovery.Service) {
 func (h *ServicesHandler) DeleteService(id string) {
 	for i, old := range h.services {
 		if old.ID == id {
+			// And vent.
+			if h.changes != nil {
+				h.changes <- background.ServiceChange{
+					Change:  "add",
+					Service: old,
+				}
+			}
+
 			h.services = append(h.services[:i], h.services[i+1:]...)
 		}
 	}

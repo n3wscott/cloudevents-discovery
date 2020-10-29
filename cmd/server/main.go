@@ -6,11 +6,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/n3wscott/cloudevents-discovery/pkg/background"
+	"github.com/n3wscott/cloudevents-discovery/pkg/handler"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/n3wscott/cloudevents-discovery/pkg/handler"
 )
 
 type envConfig struct {
@@ -18,6 +17,7 @@ type envConfig struct {
 	Downstream    string `envconfig:"DISCOVERY_DOWNSTREAM"` // comma separated list of urls.
 	Services      string `envconfig:"DISCOVERY_SERVICES_FILE"`
 	Subscriptions string `envconfig:"SUBSCRIPTIONS_FILE"`
+	Sinks         string `envconfig:"SINK"` // comma separated list of urls.
 }
 
 func main() {
@@ -27,7 +27,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	servicesHandler := new(handler.ServicesHandler)
+	changes := make(chan background.ServiceChange, 10) // TODO: 10 might be too small of a channel buffer.
+
+	servicesHandler := handler.NewServiceHandler(changes)
 	if env.Services != "" {
 		if err := servicesHandler.LoadServicesFromFile(env.Services); err != nil {
 			log.Fatal(err)
@@ -47,6 +49,13 @@ func main() {
 	http.Handle("/", r)
 
 	ctx := context.Background()
+
+	vent := background.NewVent(env.Sinks, changes)
+	go func() {
+		if err := vent.Start(ctx); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	agg := background.NewDiscoveryAggregation(env.Downstream, servicesHandler)
 	go func() {
