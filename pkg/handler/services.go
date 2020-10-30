@@ -53,7 +53,7 @@ func (h *ServicesHandler) Set(service discovery.Service) {
 				// And vent.
 				if h.changes != nil {
 					h.changes <- background.ServiceChange{
-						Change:  "update",
+						Change:  "updated",
 						Service: service,
 					}
 				}
@@ -65,7 +65,7 @@ func (h *ServicesHandler) Set(service discovery.Service) {
 	// And vent.
 	if h.changes != nil {
 		h.changes <- background.ServiceChange{
-			Change:  "add",
+			Change:  "added",
 			Service: service,
 		}
 	}
@@ -110,7 +110,7 @@ func (h *ServicesHandler) DeleteService(id string) {
 			// And vent.
 			if h.changes != nil {
 				h.changes <- background.ServiceChange{
-					Change:  "add",
+					Change:  "deleted",
 					Service: old,
 				}
 			}

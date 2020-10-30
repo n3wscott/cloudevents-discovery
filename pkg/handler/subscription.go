@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/n3wscott/cloudevents-discovery/pkg/apis/subscription"
+	"github.com/n3wscott/cloudevents-discovery/pkg/background"
 	"net/http"
 	"sync"
 
@@ -13,6 +14,14 @@ import (
 type SubscriptionHandler struct {
 	once          sync.Once
 	subscriptions map[string]subscription.Subscription
+
+	changes chan<- background.SubscriptionChange
+}
+
+func NewSubscriptionHandler(changes chan<- background.SubscriptionChange) *SubscriptionHandler {
+	return &SubscriptionHandler{
+		changes: changes,
+	}
 }
 
 // TODO: I made a choice to not implement the OpenAPI of the current api for subscription. I wanted id in the url, not query.
@@ -100,7 +109,8 @@ func (h *SubscriptionHandler) handleCreateOrUpdate(w http.ResponseWriter, r *htt
 		return
 	}
 
-	if _, found := h.subscriptions[sub.ID]; found && r.Method == http.MethodPost {
+	var found bool
+	if _, found = h.subscriptions[sub.ID]; found && r.Method == http.MethodPost {
 		http.Error(w, fmt.Sprintf("subscription %q already exists", sub.ID), http.StatusConflict)
 		return
 	}
@@ -112,6 +122,18 @@ func (h *SubscriptionHandler) handleCreateOrUpdate(w http.ResponseWriter, r *htt
 
 	// Save.
 	h.subscriptions[sub.ID] = *sub
+
+	// And vent.
+	if h.changes != nil {
+		change := "added"
+		if found {
+			change = "updated"
+		}
+		h.changes <- background.SubscriptionChange{
+			Change:       change,
+			Subscription: *sub,
+		}
+	}
 
 	js, err := json.Marshal(sub)
 	if err != nil {
@@ -215,6 +237,14 @@ func (h *SubscriptionHandler) handleDelete(id string, w http.ResponseWriter, r *
 	if _, found := h.subscriptions[id]; !found {
 		http.Error(w, fmt.Sprintf("subscription %q not found", id), http.StatusNotFound)
 		return
+	}
+
+	// And vent.
+	if h.changes != nil {
+		h.changes <- background.SubscriptionChange{
+			Change:       "deleted",
+			Subscription: h.subscriptions[id],
+		}
 	}
 
 	delete(h.subscriptions, id)

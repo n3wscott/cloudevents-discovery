@@ -13,6 +13,7 @@ import (
 )
 
 type envConfig struct {
+	Service       string `envconfig:"SERVICE" default:"http://localhost:8080"`
 	Port          int    `envconfig:"PORT" default:"8080"`
 	Downstream    string `envconfig:"DISCOVERY_DOWNSTREAM"` // comma separated list of urls.
 	Services      string `envconfig:"DISCOVERY_SERVICES_FILE"`
@@ -27,7 +28,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	changes := make(chan background.ServiceChange, 10) // TODO: 10 might be too small of a channel buffer.
+	changes := make(chan background.ServiceChange, 10)   // TODO: 10 might be too small of a channel buffer.
+	subs := make(chan background.SubscriptionChange, 10) // TODO: 10 might be too small of a channel buffer.
 
 	servicesHandler := handler.NewServiceHandler(changes)
 	if env.Services != "" {
@@ -35,8 +37,10 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+	// Add ourself.
+	servicesHandler.Set(background.Service(env.Service))
 
-	subscriptionHandler := new(handler.SubscriptionHandler)
+	subscriptionHandler := handler.NewSubscriptionHandler(subs)
 
 	r := mux.NewRouter()
 
@@ -50,7 +54,7 @@ func main() {
 
 	ctx := context.Background()
 
-	vent := background.NewVent(env.Sinks, changes)
+	vent := background.NewVent(env.Service, env.Sinks, changes, subs)
 	go func() {
 		if err := vent.Start(ctx); err != nil {
 			log.Println(err)
