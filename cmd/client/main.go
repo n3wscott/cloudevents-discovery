@@ -58,12 +58,23 @@ func main() {
 		fmt.Printf("[%d]:\t%+v\n", i, sub)
 	}
 
-	sink := cloudevents.ParseURI("http://localhost:1337")
+	sink := cloudevents.ParseURI("https://localhost:8080")
 	sub := subscription.Subscription{
 		ID:       "123-123",
 		Protocol: "HTTP",
 		Sink:     *sink,
 	}
+
+	// Uncomment for filtered example.
+	//sub.Filter = &subscription.Filter{
+	//	Dialect: "basic",
+	//	Filters: []subscription.BasicFilter{{
+	//		Type:     "suffix",
+	//		Property: "type",
+	//		Value:    "updated.v1",
+	//	}},
+	//}
+
 	updated, err := c.Subscriptions(*s).Subscriptions().Update(ctx, sub, nil)
 	if err != nil {
 		panic(err)
